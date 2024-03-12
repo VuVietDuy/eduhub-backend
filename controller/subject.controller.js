@@ -1,8 +1,6 @@
 const Subject = require('../models/Subject');
 
 function createNewSubject(req, res) {
-    //to do something
-    console.log(req.body);
     try {
         const newSubject = new Subject(req.body)
         newSubject.save();
