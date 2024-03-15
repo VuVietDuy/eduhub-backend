@@ -10,4 +10,4 @@ const Subject = new Schema({
 })
 
 module.exports = mongoose.model('Subject', Subject);
-// so it
+// Số ít
