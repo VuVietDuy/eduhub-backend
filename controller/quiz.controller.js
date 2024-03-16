@@ -62,14 +62,14 @@ function getQuizById(req, res) {
 }
 
 function deleteQuiz(req, res) {
-  const reqId = req.params.id;
+  const reqId = req.query.id;
   if (!reqId) {
     return res.status(200).json({
       success: false,
       message: "Missing required parameter!",
     });
   } else {
-    Quiz.findByIdAndDelete(id).then((response) => {
+    Quiz.findByIdAndDelete(reqId).then((response) => {
       return res.status(200).json({
         success: true,
         message: response,
@@ -102,10 +102,11 @@ function updateQuiz(req, res) {
         returnOriginal: false,
       }
     )
-      .then(() => {
+      .then((quiz) => {
         return res.status(200).json({
           success: true,
           message: "Successful!",
+          data: quiz,
         });
       })
       .catch((err) => {
