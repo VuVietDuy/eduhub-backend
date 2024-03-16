@@ -47,12 +47,12 @@ function getQuizById(req, res) {
       .then((quiz) => {
         return res.status(200).json({
           success: true,
-          message: "Successful",
+          message: "Successful!",
           data: quiz,
         });
       })
       .catch((err) => {
-        res.status(500).json({
+        res.status(200).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
@@ -102,11 +102,11 @@ function updateQuiz(req, res) {
       .then(() => {
         return res.status(200).json({
           success: true,
-          message: "Successful",
+          message: "Successful!",
         });
       })
       .catch((err) => {
-        res.status(500).json({
+        res.status(200).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
