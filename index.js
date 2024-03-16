@@ -1,10 +1,14 @@
 const express = require('express')
-const app = express()
 require('dotenv').config();
 const db = require('./config/mongodb/index')
 const bodyParser = require('body-parser')
 var multer = require('multer');
 var forms = multer();
+
+const app = express();
+
+// Config
+app.set('view engine', 'ejs');
 
 const port = process.env.PORT || 8000
 db.connect()
@@ -15,6 +19,7 @@ const authRouter = require('./routes/auth')
 const quizRouter = require('./routes/quiz')
 const subjectRouter = require('./routes/subject')
 const userRouter = require('./routes/user')
+const viewRouter = require('./routes/view')
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -39,6 +44,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/quiz', quizRouter)
 app.use('/api/subject', subjectRouter)
 app.use('/api/user', userRouter)
+app.use('/view', viewRouter)
 
 app.listen(port, () => {
     console.log(`Eduhub listening on port http://localhost:${port}`)
