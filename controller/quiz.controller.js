@@ -86,7 +86,7 @@ function updateQuiz(req, res) {
       message: "Missing required parameter!",
     });
   } else {
-    Quiz.update(
+    Quiz.findOneAndUpdate(
       {
         id: reqId,
       },
@@ -97,6 +97,9 @@ function updateQuiz(req, res) {
         deadline: req.body.deadline,
         imgURL: req.body.imgURL,
         active: req.body.active,
+      },
+      {
+        returnOriginal: false,
       }
     )
       .then(() => {
