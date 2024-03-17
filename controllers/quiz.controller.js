@@ -120,8 +120,7 @@ function updateQuiz(req, res) {
 module.exports = {
   createNewQuiz,
   getAllQuiz,
-  updateQuiz,
   getQuizById,
-  deleteQuiz,
   updateQuiz,
+  deleteQuiz,
 };

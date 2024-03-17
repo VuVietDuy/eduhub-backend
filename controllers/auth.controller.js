@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const bcrypt = require('bcryptjs');
 
 
 const createJWT = (payload) => {
@@ -10,23 +11,7 @@ const createJWT = (payload) => {
     return token;
 }
 
-const verifyToken = (token) => {
-    var decode = null
-    const key = process.env.ACCESS_TOKEN_SECRET || 'eduhub';
-    try {
-        decode = jwt.verify(token, key);
-    } catch (err) {
-        console.log(err);
-    }
-    return decode;
-}
-
-function checkPassword(inputPassword, password) {
-    return inputPassword === password;
-}
-
 function register(req, res) {
-    console.log(req.body);
     User.findOne({ email: req.body.email })
         .then(user => {
             if (user) {
@@ -57,36 +42,46 @@ function register(req, res) {
 }
 
 function login(req, res) {
-    console.log(req.body);
     const client = req.body;
     User.findOne({email: client.email})
-    .then((user) => {
+    .then(async (user) => {
         if(user) {
-            if(checkPassword(client.password, user.password)) {
-                const dataForAccessToken = {
-                    _id: user._id,
-                };
-                
-                const accessToken = createJWT(dataForAccessToken);
-
-                return res.status(200).json({
-                    success: true,
-                    message: "Đăng nhập thành công",
-                    data: {
-                        user: user,
-                        accessToken: accessToken,
-                    }
-                })
-            } else {
-                return res.status(401).json({
-                    success: true,
-                    message: "Sai mật khẩu",
-                    data: null
-                })
-            }
+            bcrypt.compare(client.password, user.password, function(err, result) {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({
+                        success: false,
+                        message: "Lỗi server",
+                        data: null
+                    })
+                }
+                console.log(result);
+                if (result) {
+                    const dataForAccessToken = {
+                        _id: user._id,
+                    };
+                    
+                    const accessToken = createJWT(dataForAccessToken);
+    
+                    return res.status(200).json({
+                        success: true,
+                        message: "Đăng nhập thành công",
+                        data: {
+                            user: user,
+                            accessToken: accessToken,
+                        }
+                    })
+                } else {
+                    return res.status(401).json({
+                        success: false,
+                        message: "Sai mật khẩu",
+                        data: null
+                    })
+                }
+            });
         } else {
             return res.status(404).json({
-                success: true,
+                success: false,
                 message: "Tài khoản không tồn tại",
                 data: null
             })
@@ -94,14 +89,24 @@ function login(req, res) {
     })
     .catch(err => {
         return res.status(500).json({
-            success: true,
+            success: false,
             message: err.message,
             data: null
         })
     })
 }
 
+async function logout(req, res) {
+    console.log('Logout');
+    return res.status(200).json({
+        success: true,
+        message: "Đăng xuất",
+        data: null,
+    })
+}
+
 module.exports = {
     register,
-    login
+    login,
+    logout,
 }
