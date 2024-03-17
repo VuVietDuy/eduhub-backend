@@ -17,6 +17,7 @@ app.use(express.json());
 
 const authRouter = require("./routes/auth");
 const quizRouter = require("./routes/quiz");
+const questionRouter = require("./routes/question");
 const subjectRouter = require("./routes/subject");
 const userRouter = require("./routes/user");
 const viewRouter = require("./routes/view");
@@ -44,6 +45,7 @@ app.use(function (req, res, next) {
 
 app.use("/api/auth", authRouter);
 app.use("/api/quiz", quizRouter);
+app.use("/api/question", questionRouter);
 app.use("/api/subject", subjectRouter);
 app.use("/api/user", userRouter);
 app.use("/view", viewRouter);
