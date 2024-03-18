@@ -3,7 +3,6 @@ require('dotenv').config();
 const db = require('./config/mongodb/index')
 const bodyParser = require('body-parser')
 var multer = require('multer');
-var forms = multer();
 
 const app = express();
 
@@ -21,10 +20,8 @@ const subjectRouter = require('./routes/subject')
 const userRouter = require('./routes/user')
 const viewRouter = require('./routes/view')
 
-app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(forms.array());
-
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -45,6 +42,8 @@ app.use('/api/quiz', quizRouter)
 app.use('/api/subject', subjectRouter)
 app.use('/api/user', userRouter)
 app.use('/view', viewRouter)
+
+app.use(express.static(__dirname + '/public'));
 
 app.listen(port, () => {
     console.log(`Eduhub listening on port http://localhost:${port}`)

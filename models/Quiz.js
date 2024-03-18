@@ -8,7 +8,7 @@ const Quiz = new Schema(
     description: { type: String, required: true },
     timeLimit: { type: Number },
     deadline: { type: Date },
-    imgURL: { type: String },
+    imgUrl: { type: String },
     subjectId: { type: ObjectId, ref: "Subject", required: true },
     createdBy: {
       type: ObjectId,

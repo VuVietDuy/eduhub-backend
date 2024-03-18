@@ -11,8 +11,8 @@ const createJWT = (payload) => {
     return token;
 }
 
-function register(req, res) {
-    User.findOne({ email: req.body.email })
+async function register(req, res) {
+    await User.findOne({ email: req.body.email })
         .then(user => {
             if (user) {
                 return res.status(409).json({

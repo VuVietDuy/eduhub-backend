@@ -1,7 +1,21 @@
 const Quiz = require("../models/Quiz");
+const {uploadImg} = require('./uploadImg')
 
-function createNewQuiz(req, res) {
+async function createNewQuiz(req, res) {
   const newQuiz = new Quiz(req.body);
+  if(req.file) {
+    await uploadImg(req.file, 'quiz')
+    .then(url => {
+      newQuiz.imgUrl = url[0];
+    })
+    .catch(err => {
+        return res.status(500).json({
+            success: false,
+            message: err.message,
+            data: null,
+        })
+    })
+}
   newQuiz.save()
     .then(quiz => {
       return res.status(200).json({
@@ -54,10 +68,10 @@ function getQuizById(req, res) {
         });
       })
       .catch((err) => {
-        res.status(200).json({
+        res.status(500).json({
           success: false,
-          message: "Server error. Please try again.",
-          error: err.message,
+          message: err.message,
+          data: null,
         });
       });
   }

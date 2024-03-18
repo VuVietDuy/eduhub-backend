@@ -1,19 +1,37 @@
 const Subject = require('../models/Subject');
+const { uploadImg } = require('./uploadImg');
 
-function createNewSubject(req, res) {
-    const newSubject = new Subject(req.body)
-    newSubject.save()
+async function createNewSubject(req, res) {
+    var newSubject = new Subject(req.body);
+
+    if(req.file) {
+        await uploadImg(req.file, 'subject')
+        .then(url => {
+            newSubject.imgUrl = url[0];
+            console.log(url[0]);
+        })
+        .catch(err => {
+            return res.status(500).json({
+                success: false,
+                message: err.message,
+                data: null,
+            })
+        })
+    }
+
+    await newSubject.save()
         .then(subject => {
             return res.status(200).json({
                 success: true,
                 message: 'Thanh cong',
-                data: subject
+                data: subject,
             })
         })
         .catch(err => {
-            return res.status(200).json({
+            return res.status(500).json({
                 success: false,
-                message: err.message
+                message: err.message,
+                data: null,
             })
         })
 }
@@ -30,8 +48,8 @@ function getAllSubject(req, res) {
         .catch((err) => {
             res.status(500).json({
                 success: false,
-                message: 'Server error. Please try again.',
-                error: err.message,
+                message: err.message,
+                data: null,
             });
         });
 }
