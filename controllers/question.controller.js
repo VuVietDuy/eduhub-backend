@@ -1,7 +1,25 @@
 const Question = require("../models/Question");
 
 async function createNewQuestion(req, res) {
-  const newQuestion = new Question(req.body);
+  const highestOrder = await Question.findOne(
+    { quizId: req.body.quizId },
+    { orderNum: 1 },
+    { sort: { orderNum: -1 } }
+  );
+  let nextOrderNumber = 1;
+
+  if (highestOrder) {
+    nextOrderNumber = highestOrder.orderNum + 1;
+  }
+  const newQuestion = new Question({
+    orderNum: nextOrderNumber,
+    quizId: req.body.quizId,
+    questionText: req.body.questionText,
+    questionType: req.body.questionType,
+    questionId: req.body.quizId,
+    level: req.body.level,
+    answer: req.body.answer,
+  });
   await newQuestion
     .save()
     .then((question) => {
@@ -16,25 +34,6 @@ async function createNewQuestion(req, res) {
         success: false,
         message: err.message,
         data: null,
-      });
-    });
-}
-
-async function getAllQuestion(req, res) {
-  //Query get all
-  await Question.find()
-    .then((allQuestion) => {
-      return res.status(200).json({
-        success: true,
-        message: "Successful!",
-        data: allQuestion,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        success: false,
-        message: "Server error. Please try again.",
-        error: err.message,
       });
     });
 }
@@ -92,7 +91,7 @@ async function deleteQuestionById(req, res) {
   }
 }
 
-async function updateQuestion(req, res) {
+async function updateQuestionById(req, res) {
   const reqId = req.body._id;
   if (!reqId) {
     return res.status(200).json({
@@ -105,7 +104,9 @@ async function updateQuestion(req, res) {
       {
         questionText: req.body.questionText,
         questionType: req.body.questionType,
+        level: req.body.level,
         quizId: req.body.quizId,
+        answer: req.body.answer,
       },
       {
         returnDocument: "after",
@@ -130,9 +131,7 @@ async function updateQuestion(req, res) {
 
 module.exports = {
   createNewQuestion,
-  getAllQuestion,
-  updateQuestion,
+  updateQuestionById,
   getQuestionById,
   deleteQuestionById,
-  updateQuestion,
 };

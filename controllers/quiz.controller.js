@@ -1,5 +1,6 @@
 const Quiz = require("../models/Quiz");
 const Subject = require("../models/Subject");
+const Question = require("../models/Question");
 
 async function createNewQuiz(req, res) {
   const newQuiz = new Quiz(req.body);
@@ -82,9 +83,40 @@ async function getAllQuiz(req, res) {
     });
 }
 
+async function getAllQuestionFromQuiz(req, res) {
+  let sortBy = req.query.sortBy;
+  let reqQuizId = req.params.quizId;
+  let sortCondition = {};
+  if (sortBy === "level") {
+    //Level tăng dần
+    sortCondition.level = 1;
+  }
+  if (sortBy === "stt") {
+    //Số thứ tự tăng dần
+    sortCondition.orderNum = 1;
+  }
+  await Question.find({
+    quizId: reqQuizId,
+  })
+    .sort(sortCondition)
+    .then((allQuestion) => {
+      return res.status(200).json({
+        success: true,
+        message: "Danh sách câu hỏi: ",
+        data: allQuestion,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
+    });
+}
+
 async function getQuizById(req, res) {
   const reqId = req.params.id;
-
   if (!reqId) {
     return res.status(200).json({
       success: false,
@@ -137,6 +169,7 @@ async function deleteQuizById(req, res) {
 
 async function updateQuiz(req, res) {
   const reqId = req.body._id;
+  console.log(reqId);
   if (!reqId) {
     return res.status(200).json({
       success: false,
@@ -183,4 +216,5 @@ module.exports = {
   getQuizById,
   deleteQuizById,
   updateQuiz,
+  getAllQuestionFromQuiz,
 };
