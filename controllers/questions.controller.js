@@ -56,7 +56,7 @@ async function getQuestionById(req, res) {
         });
       })
       .catch((err) => {
-        res.status(200).json({
+        res.status(500).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
@@ -82,7 +82,7 @@ async function deleteQuestionById(req, res) {
         });
       })
       .catch((err) => {
-        return res.status(200).json({
+        return res.status(500).json({
           success: false,
           message: err.message,
           data: null,
@@ -120,7 +120,7 @@ async function updateQuestionById(req, res) {
         });
       })
       .catch((err) => {
-        res.status(200).json({
+        res.status(500).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,

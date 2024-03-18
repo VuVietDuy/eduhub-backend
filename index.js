@@ -44,8 +44,8 @@ app.use(function (req, res, next) {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/quiz", quizRouter);
-app.use("/api/question", questionRouter);
+app.use("/api/quizzes", quizRouter);
+app.use("/api/questions", questionRouter);
 app.use("/api/subject", subjectRouter);
 app.use("/api/user", userRouter);
 app.use("/view", viewRouter);

@@ -25,15 +25,18 @@ async function createNewQuiz(req, res) {
 async function getAllQuiz(req, res) {
   const reqOffset = req.query.offset;
   const reqLimit = req.query.limit;
-  const reqSortBy = req.query.sortBy;
+  const reqSortBy = req.query.sort_by;
   const filterByLevel = req.query.level;
   const filterBySubject = req.query.subject;
 
   let sortConditions = {};
   let filterConditions = {};
   if (reqSortBy) {
-    if (reqSortBy === "level") {
+    if (reqSortBy === "+level") {
       sortConditions.level = 1;
+    }
+    if (reqSortBy === "-level") {
+      sortConditions.level = -1;
     }
     if (reqSortBy === "newest") {
       sortConditions.createdAt = -1;
@@ -84,16 +87,22 @@ async function getAllQuiz(req, res) {
 }
 
 async function getAllQuestionFromQuiz(req, res) {
-  let sortBy = req.query.sortBy;
-  let reqQuizId = req.params.quizId;
+  let sortBy = req.query.sort_by;
+  let reqQuizId = req.params.id;
   let sortCondition = {};
-  if (sortBy === "level") {
-    //Level tăng dần
-    sortCondition.level = 1;
-  }
-  if (sortBy === "stt") {
-    //Số thứ tự tăng dần
-    sortCondition.orderNum = 1;
+  if (sortBy) {
+    if (sortBy === "+level") {
+      //Level tăng dần
+      sortCondition.level = 1;
+    }
+    if (sortBy === "-level") {
+      //Level giảm dần
+      sortCondition.level = -1;
+    }
+    if (sortBy === "+stt") {
+      //Số thứ tự tăng dần
+      sortCondition.orderNum = 1;
+    }
   }
   await Question.find({
     quizId: reqQuizId,
@@ -132,7 +141,7 @@ async function getQuizById(req, res) {
         });
       })
       .catch((err) => {
-        res.status(200).json({
+        res.status(500).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
@@ -169,7 +178,6 @@ async function deleteQuizById(req, res) {
 
 async function updateQuiz(req, res) {
   const reqId = req.body._id;
-  console.log(reqId);
   if (!reqId) {
     return res.status(200).json({
       success: false,
@@ -200,7 +208,7 @@ async function updateQuiz(req, res) {
         });
       })
       .catch((err) => {
-        res.status(200).json({
+        res.status(500).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
