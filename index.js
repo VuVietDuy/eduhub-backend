@@ -46,13 +46,13 @@ app.use(function (req, res, next) {
 
 
 app.use("/api/auth", authRouter);
-app.use("/api/quiz", quizRouter);
-app.use("/api/question", questionRouter);
-app.use("/api/subject", subjectRouter);
-app.use("/api/post", postRouter);
-app.use("/api/comment", commentRouter);
-app.use("/api/user", userRouter);
-app.use("/view", viewRouter);
+app.use("/api/quizzes", quizRouter);
+app.use("/api/questions", questionRouter);
+app.use("/api/subjects", subjectRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/users", userRouter);
+app.use("/views", viewRouter);
 
 
 const port = process.env.PORT || 8000;

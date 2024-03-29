@@ -15,7 +15,6 @@ router.get('/uploads', function(req, res, next) {
     res.render('test_uploads', {imgUrl: null})
 })
 
-
 router.get('/user', function(req, res, next) {
     User.find()
     .then(users => {
