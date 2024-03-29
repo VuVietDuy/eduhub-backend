@@ -50,3 +50,5 @@ typings/
 
 # 
 **/package-lock.json
+
+.env
