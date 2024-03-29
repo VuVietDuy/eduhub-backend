@@ -6,7 +6,8 @@ const {upload} = require('../middlewares/upload.middleware')
 router.get("/", quizController.getAllQuiz);
 router.post("/",upload.single('img') , quizController.createNewQuiz);
 router.get("/:id", quizController.getQuizById);
-router.put("/:id", quizController.updateQuiz);
+router.get("/:id/questions", quizController.getAllQuestionFromQuiz);
 router.delete("/:id", quizController.deleteQuizById);
+router.put("/", quizController.updateQuiz);
 
 module.exports = router;
