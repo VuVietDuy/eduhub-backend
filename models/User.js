@@ -10,6 +10,10 @@ const User = new Schema({
     dateOfBirth: {type: Date},
     avatarUrl: {type: String},
     roleName: {type: Number},
+    verified: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 })

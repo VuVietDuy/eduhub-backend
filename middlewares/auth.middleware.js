@@ -1,16 +1,6 @@
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../utils/verifyToken');
 require('dotenv').config();
 
-const verifyToken = (token) => {
-    var decode = null;
-    const key = process.env.ACCESS_TOKEN_SECRET || 'eduhub';
-    try {
-        decode = jwt.verify(token, key);
-    } catch (err) {
-        console.log("Erorr >> ",err);
-    }
-    return decode;
-}
 
 function isAuth(req, res, next) {
     const accessTokenFromHeader = req.headers?.authorization?.replace('Bearer ', '');
@@ -19,6 +9,7 @@ function isAuth(req, res, next) {
     };
 
     const verified = verifyToken(accessTokenFromHeader);
+    console.log(verified);
 
     if (!verified) {
         return res

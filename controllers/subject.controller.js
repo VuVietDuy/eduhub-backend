@@ -1,5 +1,5 @@
 const Subject = require('../models/Subject');
-const { uploadImg } = require('./uploadImg');
+const { uploadImg } = require('../services/uploadImg');
 
 async function createNewSubject(req, res) {
     var newSubject = new Subject(req.body);

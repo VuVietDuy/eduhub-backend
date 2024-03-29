@@ -1,21 +1,22 @@
 const Quiz = require("../models/Quiz");
-const {uploadImg} = require('./uploadImg')
+const { uploadImg } = require('../services/uploadImg');
+const Subject = require("../models/Subject");
 
 async function createNewQuiz(req, res) {
   const newQuiz = new Quiz(req.body);
-  if(req.file) {
+  if (req.file) {
     await uploadImg(req.file, 'quiz')
-    .then(url => {
-      newQuiz.imgUrl = url[0];
-    })
-    .catch(err => {
+      .then(url => {
+        newQuiz.imgUrl = url[0];
+      })
+      .catch(err => {
         return res.status(500).json({
-            success: false,
-            message: err.message,
-            data: null,
+          success: false,
+          message: err.message,
+          data: null,
         })
-    })
-}
+      })
+  }
   newQuiz.save()
     .then(quiz => {
       return res.status(200).json({
@@ -24,17 +25,61 @@ async function createNewQuiz(req, res) {
         data: quiz,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       return res.status(500).json({
         success: false,
         message: err.message,
         data: null,
-      })
-    })
+      });
+    });
 }
 
-function getAllQuiz(req, res) {
-  Quiz.find()
+
+async function getAllQuiz(req, res) {
+  const reqOffset = req.query.offset;
+  const reqLimit = req.query.limit;
+  const reqSortBy = req.query.sortBy;
+  const filterByLevel = req.query.level;
+  const filterBySubject = req.query.subject;
+
+  let sortConditions = {};
+  let filterConditions = {};
+  if (reqSortBy) {
+    if (reqSortBy === "level") {
+      sortConditions.level = 1;
+    }
+    if (reqSortBy === "newest") {
+      sortConditions.createdAt = -1;
+    }
+  }
+
+  if (filterByLevel) {
+    filterConditions.level = filterByLevel;
+  }
+
+  if (filterBySubject) {
+    //req.query.subject là id
+    // filterConditions.subjectId = filterBySubject;
+    // console.log("subject id req:", filterBySubject);
+
+    //req.query.subject là name
+    let subjectIdByQuery = "";
+    await Subject.findOne({
+      name: filterBySubject,
+    }).then((subject) => {
+      subjectIdByQuery = subject._id;
+    });
+
+    await Quiz.findOne({ subjectId: subjectIdByQuery }).then((quiz) => {
+      filterConditions.subjectId = quiz.subjectId;
+    });
+  }
+
+  //Query get all
+  await Quiz.find(filterConditions)
+    .skip(reqOffset)
+    .limit(reqLimit)
+    .sort(sortConditions)
     .then((allQuiz) => {
       return res.status(200).json({
         success: true,
@@ -51,19 +96,20 @@ function getAllQuiz(req, res) {
     });
 }
 
-function getQuizById(req, res) {
+async function getQuizById(req, res) {
   const reqId = req.params.id;
+
   if (!reqId) {
     return res.status(200).json({
       success: false,
       message: "Missing required parameter!",
     });
   } else {
-    Quiz.findById(id)
+    await Quiz.findById(reqId)
       .then((quiz) => {
         return res.status(200).json({
           success: true,
-          message: "Successful!",
+          message: "Đề thi: ",
           data: quiz,
         });
       })
@@ -77,7 +123,7 @@ function getQuizById(req, res) {
   }
 }
 
-function deleteQuiz(req, res) {
+async function deleteQuizById(req, res) {
   const reqId = req.params.id;
   if (!reqId) {
     return res.status(200).json({
@@ -85,40 +131,53 @@ function deleteQuiz(req, res) {
       message: "Missing required parameter!",
     });
   } else {
-    Quiz.findByIdAndDelete(id).then((response) => {
-      return res.status(200).json({
-        success: true,
-        message: response,
+    await Quiz.findByIdAndDelete(reqId)
+      .then((quiz) => {
+        return res.status(200).json({
+          success: true,
+          message: "Xóa câu hỏi thành công",
+          data: quiz,
+        });
+      })
+      .catch((err) => {
+        return res.status(200).json({
+          success: false,
+          message: err.message,
+          data: null,
+        });
       });
-    });
   }
 }
 
-function updateQuiz(req, res) {
-  const reqId = req.params.id;
+async function updateQuiz(req, res) {
+  const reqId = req.body._id;
   if (!reqId) {
     return res.status(200).json({
       success: false,
       message: "Missing required parameter!",
     });
   } else {
-    Quiz.update(
-      {
-        id: reqId,
-      },
+    await Quiz.findByIdAndUpdate(
+      reqId,
       {
         title: req.body.title,
         description: req.body.description,
         timeLimit: req.body.timeLimit,
         deadline: req.body.deadline,
         imgURL: req.body.imgURL,
+        level: req.body.level,
         active: req.body.active,
+        subjectId: req.body.subjectId,
+      },
+      {
+        returnDocument: "after",
       }
     )
-      .then(() => {
+      .then((quiz) => {
         return res.status(200).json({
           success: true,
-          message: "Successful!",
+          message: "Chỉnh sửa bài viết thành công!",
+          data: quiz,
         });
       })
       .catch((err) => {
@@ -136,5 +195,6 @@ module.exports = {
   getAllQuiz,
   getQuizById,
   updateQuiz,
-  deleteQuiz,
+  deleteQuizById,
+  updateQuiz,
 };

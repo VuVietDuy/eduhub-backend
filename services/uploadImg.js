@@ -1,10 +1,6 @@
 const firebase = require('../config/firebase')
-var multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 
-const upload = multer({
-    storage: multer.memoryStorage(),
-})
 
 async function uploadImg(file, folderPath) {
 
@@ -34,5 +30,4 @@ async function uploadImg(file, folderPath) {
 
 module.exports = {
     uploadImg,
-    upload
 }
