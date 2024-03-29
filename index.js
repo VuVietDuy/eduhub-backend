@@ -9,7 +9,7 @@ const app = express();
 // Connect db
 db.connect();
 
-// Config
+// Config view engine
 app.set("view engine", "ejs");
 
 // Define router

@@ -1,4 +1,5 @@
 const Question = require("../models/Question");
+const Option = require("../models/Option");
 
 async function createNewQuestion(req, res) {
   const highestOrder = await Question.findOne(
@@ -18,11 +19,14 @@ async function createNewQuestion(req, res) {
     questionType: req.body.questionType,
     questionId: req.body.quizId,
     level: req.body.level,
-    answer: req.body.answer,
   });
-  await newQuestion
-    .save()
+  const options = new Option(req.body.options);
+  await newQuestion.save()
     .then((question) => {
+      options.
+      options.map(option => {
+        Option.save(option)
+      })
       return res.status(200).json({
         success: true,
         message: "Tạo câu hỏi thành công",

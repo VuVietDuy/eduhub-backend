@@ -48,11 +48,6 @@ async function getAllQuiz(req, res) {
   }
 
   if (filterBySubject) {
-    //req.query.subject là id
-    // filterConditions.subjectId = filterBySubject;
-    // console.log("subject id req:", filterBySubject);
-
-    //req.query.subject là name
     let subjectIdByQuery = "";
     await Subject.findOne({
       name: filterBySubject,
@@ -65,7 +60,6 @@ async function getAllQuiz(req, res) {
     });
   }
 
-  //Query get all
   await Quiz.find(filterConditions)
     .skip(reqOffset)
     .limit(reqLimit)
@@ -217,6 +211,17 @@ async function updateQuiz(req, res) {
   }
 }
 
+const Option = require
+function submitQuiz(req, res) {
+  const quizId = req.params.quizId;
+  const submission = req.body.submission;
+  var score = 0;
+  submission.map((item) => {
+    item.answers.map((answer) => {
+    })
+  })
+}
+
 module.exports = {
   createNewQuiz,
   getAllQuiz,
@@ -225,4 +230,5 @@ module.exports = {
   deleteQuizById,
   updateQuiz,
   getAllQuestionFromQuiz,
+  submitQuiz,
 };
