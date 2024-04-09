@@ -1,9 +1,12 @@
-const comment = require("../models/Comment");
+const Comment = require("../models/Comment");
+const User = require("../models/User");
 
 async function deleteCommentById(req, res) {
   const commentId = req.params.id;
-  await comment
-    .findByIdAndDelete(commentId)
+  const userId = req.userId;
+
+  await Comment
+    .findOneAndDelete({ "_id": commentId, "createdBy": userId })
     .then((comment) => {
       return res.status(200).json({
         success: true,
@@ -19,14 +22,15 @@ async function deleteCommentById(req, res) {
       });
     });
 }
+
 async function updateCommentById(req, res) {
   const commentId = req.params.id;
-  await comment
+  await Comment
     .findByIdAndUpdate(
       commentId,
       {
         content: req.body.content,
-        updatedAt: req.body.updatedAt,
+        updatedAt: Date.now(),
       },
       {
         returnDocument: "after",

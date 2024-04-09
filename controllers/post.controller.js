@@ -1,11 +1,12 @@
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
+
 async function createNewPost(req, res) {
   const newPost = new Post(req.body);
 
   newPost.createdBy = req.userId;
 
-  let response = await newPost
+  await newPost
     .save()
     .then((Post) => {
       return res.status(200).json({
@@ -60,6 +61,7 @@ async function getPostById(req, res) {
       });
     });
 }
+
 async function deletePostById(req, res) {
   const reqId = req.params.id;
   await Post.findByIdAndDelete(reqId)
@@ -77,6 +79,7 @@ async function deletePostById(req, res) {
       });
     });
 }
+
 async function updatePostById(req, res) {
   const reqId = req.params.id;
   console.log("check req: ", req.body);
@@ -141,8 +144,10 @@ async function createComment(req, res) {
       });
     });
 }
+
 async function getAllComments(req, res) {
-  await Comment.find()
+  const postId = req.params.postId;
+  await Comment.find({ "targetId": postId })
     .then((Comment) => {
       return res.status(200).json({
         success: true,
@@ -158,6 +163,7 @@ async function getAllComments(req, res) {
       });
     });
 }
+
 module.exports = {
   createNewPost,
   getAllPosts,
