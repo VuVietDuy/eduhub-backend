@@ -24,16 +24,16 @@ const viewRouter = require("./routes/view");
 
 // Set up
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Set up
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  // res.setHeader('Access-Control-Allow-Origin', "http://localhost:3000");
+  res.setHeader('Access-Control-Allow-Origin', "http://localhost:3000");
   // Request methods you wish to allow
   res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
   // Request headers you wish to allow
   res.setHeader("Access-Control-Allow-Headers", "Authorization, content-type");
@@ -57,5 +57,5 @@ app.use("/views", viewRouter);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
-    console.log(`Eduhub listening on port http://localhost:${port}`);
+  console.log(`Eduhub listening on port http://localhost:${port}`);
 });
