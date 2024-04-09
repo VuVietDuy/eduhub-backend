@@ -124,7 +124,7 @@ async function updateQuestionById(req, res) {
         });
       })
       .catch((err) => {
-        res.status(500).json({
+        return res.status(500).json({
           success: false,
           message: "Server error. Please try again.",
           error: err.message,
