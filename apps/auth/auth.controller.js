@@ -1,20 +1,19 @@
-const User = require('../models/User')
+const User = require('../users/user.model')
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 
-const { sendEmail } = require('../utils/sendEmail');
-const { genHtmlMailAuth } = require('../utils/genHtmlMailAuth');
-const { genJWT } = require('../utils/genJWT');
-const { verifyToken } = require('../utils/verifyToken');
+const { sendEmail } = require('../../utils/sendEmail');
+const { genHtmlMailAuth } = require('../../utils/genHtmlMailAuth');
+const { genJWT } = require('../../utils/genJWT');
+const { verifyToken } = require('../../utils/verifyToken');
 
 async function register(req, res) {
-    console.log(req.body);
-    await User.findOne({ email: req.body.email })
+    await User.findOne({ username: req.body.username })
         .then(user => {
             if (user) {
                 return res.status(409).json({
                     success: false,
-                    message: 'Email đã tồn tại',
+                    message: 'Username đã tồn tại',
                     data: null
                 })
             } else {
@@ -25,7 +24,7 @@ async function register(req, res) {
                             userId: user._id,
                         }
                         const token = genJWT(data, '10m');
-                        sendEmail(user.email, 'Xác thực email',genHtmlMailAuth(`http://localhost:8000/api/auth/verify/${token}`, user.firstName));
+                        // sendEmail(user.username, 'Xác thực username', genHtmlMailAuth(`http://localhost:8000/api/auth/verify/${token}`, user.firstName));
                         return res.status(200).json({
                             success: true,
                             message: 'Đăng ký thành công',
@@ -45,7 +44,7 @@ async function register(req, res) {
 
 function login(req, res) {
     const client = req.body;
-    User.findOne({ email: client.email })
+    User.findOne({ username: client.username })
         .then(async (user) => {
             if (user) {
                 bcrypt.compare(client.password, user.password, function (err, result) {
@@ -62,7 +61,14 @@ function login(req, res) {
                             _id: user._id,
                         };
 
-                        const accessToken = genJWT(dataForAccessToken, '365d');
+                        const accessToken = genJWT(dataForAccessToken, '3d');
+                        if (!accessToken) {
+                            return res.status(401).json({
+                                success: false,
+                                message: "Đăng nhập không thành công",
+                                data: null
+                            })
+                        }
 
                         return res.status(200).json({
                             success: true,
@@ -109,8 +115,8 @@ async function logout(req, res) {
 async function verify(req, res) {
     const token = req.params.token;
     const data = verifyToken(token)
-    if(data) {
-        await User.findByIdAndUpdate(data.userId, {verified: true})
+    if (data) {
+        await User.findByIdAndUpdate(data.userId, { verified: true })
             .then(() => {
                 return res.redirect('http://localhost:300/login')
             })

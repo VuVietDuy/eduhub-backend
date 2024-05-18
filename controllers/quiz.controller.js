@@ -1,5 +1,5 @@
 const Quiz = require("../models/Quiz");
-const Subject = require("../models/Subject");
+const Subject = require("../apps/subjects/subject.model");
 const Question = require("../models/Question");
 
 async function createNewQuiz(req, res) {
@@ -211,7 +211,7 @@ async function updateQuiz(req, res) {
   }
 }
 
-const Option = require
+const Option = require("../models/Option")
 function submitQuiz(req, res) {
   const quizId = req.params.quizId;
   const submission = req.body.submission;
@@ -221,6 +221,8 @@ function submitQuiz(req, res) {
     })
   })
 }
+
+
 
 module.exports = {
   createNewQuiz,
