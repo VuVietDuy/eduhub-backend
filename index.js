@@ -3,10 +3,15 @@ const db = require('./config/mongodb/index')
 const bodyParser = require('body-parser')
 require('dotenv').config();
 var cors = require('cors')
+const cookieParser = require('cookie-parser');
 
 // Init application
 const app = express();
-app.use(cors())
+app.use(cookieParser()) //cookie-parser dùng để đọc cookies của request:
+app.use(cors({
+  origin: 'http://localhost:3000', //Chan tat ca cac domain khac ngoai domain nay
+  credentials: true //Để bật cookie HTTP qua CORS
+}))
 
 // Connect db
 db.connect();

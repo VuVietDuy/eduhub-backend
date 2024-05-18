@@ -6,12 +6,13 @@ function isAuth(req, res, next) {
     "Bearer ",
     ""
   );
+  // const token = req.cookies.refreshToken;
+  // console.log("refresh token >>> ", req.cookies.refreshToken);
   if (!accessTokenFromHeader) {
-    return res.status(401).send("Not found access token");
+    return res.status(406).send("Not found access token");
   }
 
-  const verified = verifyToken(accessTokenFromHeader);
-  console.log(verified);
+  const verified = verifyToken(accessTokenFromHeader, process.env.REFRESH_TOKEN_SECRET || 'eduhub');
 
   if (!verified) {
     return res

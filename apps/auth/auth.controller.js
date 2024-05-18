@@ -2,8 +2,6 @@ const User = require('../users/user.model')
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 
-const { sendEmail } = require('../../utils/sendEmail');
-const { genHtmlMailAuth } = require('../../utils/genHtmlMailAuth');
 const { genJWT } = require('../../utils/genJWT');
 const { verifyToken } = require('../../utils/verifyToken');
 
@@ -23,8 +21,6 @@ async function register(req, res) {
                         const data = {
                             userId: user._id,
                         }
-                        const token = genJWT(data, '10m');
-                        // sendEmail(user.username, 'Xác thực username', genHtmlMailAuth(`http://localhost:8000/api/auth/verify/${token}`, user.firstName));
                         return res.status(200).json({
                             success: true,
                             message: 'Đăng ký thành công',
@@ -61,14 +57,29 @@ function login(req, res) {
                             _id: user._id,
                         };
 
-                        const accessToken = genJWT(dataForAccessToken, '3d');
+                        const accessToken = genJWT(dataForAccessToken, process.env.ACCESS_TOKEN_SECRET || 'eduhub', '15m');
                         if (!accessToken) {
-                            return res.status(401).json({
+                            return res.status(406).json({
                                 success: false,
                                 message: "Đăng nhập không thành công",
                                 data: null
                             })
                         }
+
+                        const refreshToken = genJWT(dataForAccessToken, process.env.REFRESH_TOKEN_SECRET || 'eduhub', '30d');
+                        if (!accessToken) {
+                            return res.status(406).json({
+                                success: false,
+                                message: "Đăng nhập không thành công",
+                                data: null
+                            })
+                        }
+
+                        res.cookie('refreshToken', refreshToken, {
+                            maxAge: 365 * 24 * 60 * 60 * 100,
+                            httpOnly: true,
+                            secure: true,
+                        })
 
                         return res.status(200).json({
                             success: true,
@@ -79,7 +90,7 @@ function login(req, res) {
                             }
                         })
                     } else {
-                        return res.status(401).json({
+                        return res.status(406).json({
                             success: false,
                             message: "Sai mật khẩu",
                             data: null
@@ -104,7 +115,7 @@ function login(req, res) {
 }
 
 async function logout(req, res) {
-    console.log('Logout');
+    res.clearCookie('refreshToken', { httpOnly: true, secure: true });
     return res.status(200).json({
         success: true,
         message: "Đăng xuất",
@@ -136,9 +147,27 @@ async function verify(req, res) {
     }
 }
 
+async function refreshToken(req, res) {
+    const refreshToken = req.cookies.refreshToken;
+    console.log("refresh token >>> ", refreshToken)
+
+    if (!refreshToken) return res.sendStatus(401);
+    const verified = verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'eduhub');
+
+    if (!verified) {
+        return res
+            .status(403)
+            .send("Refresh token không tồn tại");
+    }
+
+    const accessToken = genJWT({ _id: verified._id }, process.env.ACCESS_TOKEN_SECRET || 'eduhub', '15m');
+    res.status(200).json({ accessToken: accessToken });
+}
+
 module.exports = {
     register,
     login,
     logout,
     verify,
+    refreshToken
 }
