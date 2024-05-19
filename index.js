@@ -28,6 +28,7 @@ const postRouter = require("./routes/post");
 const commentRouter = require("./routes/comment");
 const userRouter = require("./apps/users/user.routes");
 const viewRouter = require("./routes/view");
+const classRouter = require("./apps/classes/class.routes")
 
 // Set up
 app.use(bodyParser.json());
@@ -60,6 +61,7 @@ app.use("/api/subjects", subjectRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/users", userRouter);
+app.use("/api/classes", classRouter);
 app.use("/views", viewRouter);
 
 
