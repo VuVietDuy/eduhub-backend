@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../apps/users/user.model')
-const Quiz = require('../models/Quiz')
+const User = require('../users/user.model')
+const Quiz = require('../quizzes/quiz.model')
 
 router.get('/login', function (req, res, next) {
     res.render('login')

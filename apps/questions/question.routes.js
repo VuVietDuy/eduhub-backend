@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const questionController = require("../controllers/question.controller");
+const questionController = require("./question.controller");
 
 router.post("/", questionController.createNewQuestion);
 router.get("/:id", questionController.getQuestionById);

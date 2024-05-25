@@ -1,3 +1,4 @@
+const { Role } = require("../enum/Role");
 const { verifyToken } = require("../utils/verifyToken");
 require("dotenv").config();
 
@@ -6,8 +7,6 @@ function isAuth(req, res, next) {
     "Bearer ",
     ""
   );
-  // const token = req.cookies.refreshToken;
-  // console.log("refresh token >>> ", req.cookies.refreshToken);
   if (!accessTokenFromHeader) {
     return res.status(406).send("Not found access token");
   }
@@ -19,11 +18,27 @@ function isAuth(req, res, next) {
       .status(401)
       .send("Bạn không có quyền truy cập vào tính năng này!");
   }
-  req.userId = verified._id;
+  req.userId = verified.userId;
+  req.roleName = verified.roleName;
 
   return next();
 }
 
+
+function isAdmin(req, res, next) {
+  if (req.roleName === Role.ADMIN) {
+    return next();
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: "Bạn không có quyền truy cập tài nguyên này, tài nguyên này chỉ đành cho admin",
+      data: null
+    })
+  }
+
+}
+
 module.exports = {
   isAuth,
+  isAdmin
 };

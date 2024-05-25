@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const postController = require("../controllers/post.controller");
-const { upload } = require("../middlewares/upload.middleware");
-const { isAuth } = require("../middlewares/auth.middleware");
+const postController = require("./post.controller");
+const { upload } = require("../../middlewares/upload.middleware");
+const { isAuth } = require("../../middlewares/auth.middleware");
 
 router.post("/", isAuth, postController.createNewPost);
 router.post("/:postId/comments", isAuth, postController.createComment);

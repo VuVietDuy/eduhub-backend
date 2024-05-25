@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const Subject = new Schema({
-    name: { type: String, required: true},
-    description: {type: String, required: false},
-    imgUrl: {type: String},
+    name: { type: String, required: true },
+    description: { type: String, required: false },
+    imgUrl: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 })

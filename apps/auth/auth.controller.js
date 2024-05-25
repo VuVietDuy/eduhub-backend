@@ -40,6 +40,7 @@ async function register(req, res) {
 
 function login(req, res) {
     const client = req.body;
+    console.log(client);
     User.findOne({ username: client.username })
         .then(async (user) => {
             if (user) {
@@ -54,10 +55,11 @@ function login(req, res) {
                     }
                     if (result) {
                         const dataForAccessToken = {
-                            _id: user._id,
+                            userId: user._id,
+                            roleName: user.roleName,
                         };
 
-                        const accessToken = genJWT(dataForAccessToken, process.env.ACCESS_TOKEN_SECRET || 'eduhub', '15m');
+                        const accessToken = genJWT(dataForAccessToken, process.env.ACCESS_TOKEN_SECRET || 'eduhub', '30d');
                         if (!accessToken) {
                             return res.status(406).json({
                                 success: false,

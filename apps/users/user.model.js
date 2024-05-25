@@ -10,13 +10,21 @@ const User = new Schema({
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date },
     avatarUrl: { type: String },
-    roleName: { type: Number },
+    roleName: { type: Number },//0 là admin 1 là giáo viên 2 là học sinh
     verified: {
         type: Boolean,
         default: false,
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+}, {
+    virtuals: {
+        fullName: {
+            get() {
+                return this.lastName + " " + this.firstName
+            }
+        }
+    }
 })
 
 User.pre('save', async function (next) {

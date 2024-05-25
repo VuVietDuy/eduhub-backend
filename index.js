@@ -21,14 +21,17 @@ app.set("view engine", "ejs");
 
 // Define router
 const authRouter = require("./apps/auth/auth.routes");
-const quizRouter = require("./routes/quiz");
-const questionRouter = require("./routes/question");
+const quizRouter = require("./apps/quizzes/quiz.routes");
+const questionRouter = require("./apps/questions/question.routes");
 const subjectRouter = require("./apps/subjects/subject.routes");
-const postRouter = require("./routes/post");
-const commentRouter = require("./routes/comment");
+const postRouter = require("./apps/posts/post.routes");
+const commentRouter = require("./apps/comments/comment.routes");
 const userRouter = require("./apps/users/user.routes");
-const viewRouter = require("./routes/view");
 const classRouter = require("./apps/classes/class.routes")
+const teacherRouter = require("./apps/teachers/teacher.routes")
+const studentRouter = require("./apps/students/student.routes")
+const classSubjectRouter = require("./apps/class_subject/class_subject.routes")
+const viewRouter = require("./apps/view/view");
 
 // Set up
 app.use(bodyParser.json());
@@ -62,6 +65,9 @@ app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/users", userRouter);
 app.use("/api/classes", classRouter);
+app.use("/api/teachers", teacherRouter);
+app.use("/api/students", studentRouter);
+app.use("/api/class-subject", classSubjectRouter);
 app.use("/views", viewRouter);
 
 

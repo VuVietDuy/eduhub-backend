@@ -1,5 +1,5 @@
-const Comment = require("../models/Comment");
-const User = require("../apps/users/user.model");
+const Comment = require("./comment.model");
+const User = require("../users/user.model");
 
 async function deleteCommentById(req, res) {
   const commentId = req.params.id;

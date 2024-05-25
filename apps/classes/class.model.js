@@ -7,7 +7,7 @@ const Class = new Schema({
     formTeacher: {
         type: Schema.ObjectId,
         ref: "User",
-        require
+        require: false,
     },
     monitor: {
         type: Schema.ObjectId,

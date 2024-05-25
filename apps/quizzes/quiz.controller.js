@@ -1,6 +1,6 @@
-const Quiz = require("../models/Quiz");
-const Subject = require("../apps/subjects/subject.model");
-const Question = require("../models/Question");
+const Quiz = require("./quiz.model");
+const Subject = require("../subjects/subject.model");
+const Question = require("../questions/question.model");
 
 async function createNewQuiz(req, res) {
   const newQuiz = new Quiz(req.body);
@@ -42,6 +42,8 @@ async function getAllQuiz(req, res) {
       sortConditions.createdAt = -1;
     }
   }
+
+  // course=?tag=?subject=?
 
   if (filterByLevel) {
     filterConditions.level = filterByLevel;
@@ -211,7 +213,7 @@ async function updateQuiz(req, res) {
   }
 }
 
-const Option = require("../models/Option")
+const Option = require("../options/option.model")
 function submitQuiz(req, res) {
   const quizId = req.params.quizId;
   const submission = req.body.submission;
