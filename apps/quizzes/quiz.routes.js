@@ -2,9 +2,15 @@ const express = require("express");
 const router = express.Router();
 const quizController = require("./quiz.controller");
 const { upload } = require("../../middlewares/upload.middleware");
+const authMiddleware = require("../../middlewares/auth.middleware");
 
-router.post("/", upload.single("img"), quizController.createNewQuiz);
-router.get("/:id", quizController.getQuizById);
+router.post(
+  "/",
+  authMiddleware.isAuth,
+  upload.single("img"),
+  quizController.createNewQuiz
+);
+// router.get("/:id", quizController.getQuizById);
 router.get("/:id/questions", quizController.getAllQuestionFromQuiz);
 router.get("/", quizController.getAllQuiz);
 router.delete("/:id", quizController.deleteQuizById);
