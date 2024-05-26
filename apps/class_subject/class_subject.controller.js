@@ -10,6 +10,18 @@ async function createClassSubject(req, res) {
     })
 }
 
+async function getAllClassSubject(req, res) {
+    ClassSubject.find()
+        .populate('class')
+        .populate('subject')
+        .then((data) => {
+            return res.status(200).json({
+                data: data
+            })
+        })
+}
+
 module.exports = {
     createClassSubject,
+    getAllClassSubject
 }

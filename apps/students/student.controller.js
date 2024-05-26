@@ -12,6 +12,10 @@ async function createNewStudent(req, res) {
         firstName: data.firstName,
         lastName: data.lastName,
         dateOfBirth: data.dateOfBirth,
+        permanentAddress: data.permanentAddress,
+        citizenIdentification: data.citizenIdentification,
+        issuedBy: data.issuedBy,
+        description: data.description,
         roleName: Role.STUDENT,
     })
 

@@ -3,13 +3,18 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
 
 const User = new Schema({
-    email: { type: String, required: true },
+    email: { type: String, required: false },
     username: { type: String, required: true },
     password: { type: String, required: true, minLength: 7 },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date },
+    placeOfBirth: { type: String },
+    permanentAddress: { type: String },
+    citizenIdentification: { type: String },
+    issuedBy: { type: String },
     avatarUrl: { type: String },
+    description: { type: String },
     roleName: { type: Number },//0 là admin 1 là giáo viên 2 là học sinh
     verified: {
         type: Boolean,
