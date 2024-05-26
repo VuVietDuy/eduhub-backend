@@ -21,12 +21,12 @@ async function createNewQuestion(req, res) {
     level: req.body.level,
   });
   const options = new Option(req.body.options);
-  await newQuestion.save()
+  await newQuestion
+    .save()
     .then((question) => {
-      options.
-        options.map(option => {
-          Option.save(option)
-        })
+      options.options.map((option) => {
+        Option.save(option);
+      });
       return res.status(200).json({
         success: true,
         message: "Tạo câu hỏi thành công",
@@ -106,11 +106,9 @@ async function updateQuestionById(req, res) {
     await Question.findByIdAndUpdate(
       reqId,
       {
-        questionText: req.body.questionText,
+        questionContent: req.body.questionContent,
         questionType: req.body.questionType,
-        level: req.body.level,
-        quizId: req.body.quizId,
-        answer: req.body.answer,
+        options: req.body.answer,
       },
       {
         returnDocument: "after",

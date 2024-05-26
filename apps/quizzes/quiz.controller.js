@@ -4,6 +4,7 @@ const Question = require("../questions/question.model");
 
 async function createNewQuiz(req, res) {
   const newQuiz = new Quiz(req.body);
+  newQuiz.createdBy = req.userId;
   await newQuiz
     .save()
     .then((quiz) => {
@@ -23,49 +24,20 @@ async function createNewQuiz(req, res) {
 }
 
 async function getAllQuiz(req, res) {
+  //Laấy quizz theo giáo viên
+
   const reqOffset = req.query.offset;
   const reqLimit = req.query.limit;
-  const reqSortBy = req.query.sort_by;
-  const filterByLevel = req.query.level;
-  const filterBySubject = req.query.subject;
-
-  let sortConditions = {};
-  let filterConditions = {};
-  if (reqSortBy) {
-    if (reqSortBy === "+level") {
-      sortConditions.level = 1;
-    }
-    if (reqSortBy === "-level") {
-      sortConditions.level = -1;
-    }
-    if (reqSortBy === "newest") {
-      sortConditions.createdAt = -1;
-    }
+  let filterConditions = {
+    createdBy: req.query.userId,
+  };
+  if (req.query.grade) {
+    filterConditions.grade = req.query.grade;
   }
-
-  // course=?tag=?subject=?
-
-  if (filterByLevel) {
-    filterConditions.level = filterByLevel;
-  }
-
-  if (filterBySubject) {
-    let subjectIdByQuery = "";
-    await Subject.findOne({
-      name: filterBySubject,
-    }).then((subject) => {
-      subjectIdByQuery = subject._id;
-    });
-
-    await Quiz.findOne({ subjectId: subjectIdByQuery }).then((quiz) => {
-      filterConditions.subjectId = quiz.subjectId;
-    });
-  }
-
   await Quiz.find(filterConditions)
     .skip(reqOffset)
     .limit(reqLimit)
-    .sort(sortConditions)
+    .sort({ createdAt: "desc", updatedAt: "desc" })
     .then((allQuiz) => {
       return res.status(200).json({
         success: true,
@@ -83,56 +55,38 @@ async function getAllQuiz(req, res) {
 }
 
 async function getAllQuestionFromQuiz(req, res) {
-  let sortBy = req.query.sort_by;
-  let reqQuizId = req.params.id;
-  let sortCondition = {};
-  if (sortBy) {
-    if (sortBy === "+level") {
-      //Level tăng dần
-      sortCondition.level = 1;
-    }
-    if (sortBy === "-level") {
-      //Level giảm dần
-      sortCondition.level = -1;
-    }
-    if (sortBy === "+stt") {
-      //Số thứ tự tăng dần
-      sortCondition.orderNum = 1;
-    }
-  }
-  await Question.find({
-    quizId: reqQuizId,
-  })
-    .sort(sortCondition)
-    .then((allQuestion) => {
-      return res.status(200).json({
-        success: true,
-        message: "Danh sách câu hỏi: ",
-        data: allQuestion,
+  let quizId = req.params.quizId;
+  if (req.roleName === Role.STUDENT) {
+    const populateOptions = {
+      path: "quizParts.questions",
+      select: "-options.isCorrect", // Exclude trường isCorrect
+    };
+    await Quiz.findById(quizId)
+      .populate(populateOptions)
+      .then((quizz) => {
+        return res.status(200).json({
+          success: true,
+          message: "Get quizz successfully!",
+          data: quizz,
+        });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          success: false,
+          message: "Server error. Please try again.",
+          error: err.message,
+        });
       });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        success: false,
-        message: "Server error. Please try again.",
-        error: err.message,
-      });
-    });
-}
-
-async function getQuizById(req, res) {
-  const reqId = req.params.id;
-  if (!reqId) {
-    return res.status(200).json({
-      success: false,
-      message: "Missing required parameter!",
-    });
-  } else {
-    await Quiz.findById(reqId)
+  } else if (req.roleName === Role.TEACHER) {
+    const populateOptions = {
+      path: "quizParts.questions",
+    };
+    await Quiz.findById(quizId)
+      .populate(populateOptions)
       .then((quiz) => {
         return res.status(200).json({
           success: true,
-          message: "Đề thi: ",
+          message: "Get quiz successfully! ",
           data: quiz,
         });
       })
@@ -146,15 +100,34 @@ async function getQuizById(req, res) {
   }
 }
 
+async function getQuizById(req, res) {
+  const quizId = req.params.id;
+  await Quiz.findById(quizId)
+    .then((quiz) => {
+      return res.status(200).json({
+        success: true,
+        message: "Lấy bài thi thành công",
+        data: quiz,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
+    });
+}
+
 async function deleteQuizById(req, res) {
-  const reqId = req.params.id;
-  if (!reqId) {
+  const quizzId = req.params.id;
+  if (!quizzId) {
     return res.status(200).json({
       success: false,
       message: "Missing required parameter!",
     });
   } else {
-    await Quiz.findByIdAndDelete(reqId)
+    await Quiz.findByIdAndDelete(quizzId)
       .then((quiz) => {
         return res.status(200).json({
           success: true,
@@ -163,25 +136,25 @@ async function deleteQuizById(req, res) {
         });
       })
       .catch((err) => {
-        return res.status(200).json({
+        res.status(500).json({
           success: false,
-          message: err.message,
-          data: null,
+          message: "Server error. Please try again.",
+          error: err.message,
         });
       });
   }
 }
 
 async function updateQuiz(req, res) {
-  const reqId = req.body._id;
-  if (!reqId) {
+  const quizzId = req.body._id;
+  if (!quizzId) {
     return res.status(200).json({
       success: false,
       message: "Missing required parameter!",
     });
   } else {
     await Quiz.findByIdAndUpdate(
-      reqId,
+      quizzId,
       {
         title: req.body.title,
         description: req.body.description,
@@ -213,18 +186,16 @@ async function updateQuiz(req, res) {
   }
 }
 
-const Option = require("../options/option.model")
+const Option = require("../options/option.model");
+const { Role } = require("../../enum/Role");
 function submitQuiz(req, res) {
   const quizId = req.params.quizId;
   const submission = req.body.submission;
   var score = 0;
   submission.map((item) => {
-    item.answers.map((answer) => {
-    })
-  })
+    item.answers.map((answer) => {});
+  });
 }
-
-
 
 module.exports = {
   createNewQuiz,
