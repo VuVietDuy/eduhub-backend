@@ -11,10 +11,11 @@ router.post(
   quizController.createNewQuiz
 );
 // router.get("/:id", quizController.getQuizById);
-router.get("/:id/questions", quizController.getAllQuestionFromQuiz);
-router.get("/", quizController.getAllQuiz);
-router.delete("/:id", quizController.deleteQuizById);
-router.put("/", quizController.updateQuiz);
+router.get("/:quizId/questions", quizController.getAllQuestionFromQuiz);
+router.get("/", authMiddleware.isAuth, quizController.getAllQuiz);
+router.get("/:grade", authMiddleware.isAuth, quizController.getQuizByGrade);
+router.delete("/:id", authMiddleware.isAuth, quizController.deleteQuizById);
+router.put("/", authMiddleware.isAuth, quizController.updateQuiz);
 router.post("/:quizId/submit", quizController.submitQuiz);
 
 module.exports = router;

@@ -1,17 +1,19 @@
-const express = require('express')
-const db = require('./config/mongodb/index')
-const bodyParser = require('body-parser')
-require('dotenv').config();
-var cors = require('cors')
-const cookieParser = require('cookie-parser');
+const express = require("express");
+const db = require("./config/mongodb/index");
+const bodyParser = require("body-parser");
+require("dotenv").config();
+var cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 // Init application
 const app = express();
-app.use(cookieParser()) //cookie-parser dùng để đọc cookies của request:
-app.use(cors({
-  origin: 'http://localhost:3000', //Chan tat ca cac domain khac ngoai domain nay
-  credentials: true //Để bật cookie HTTP qua CORS
-}))
+app.use(cookieParser()); //cookie-parser dùng để đọc cookies của request:
+app.use(
+  cors({
+    origin: "http://localhost:3000", //Chan tat ca cac domain khac ngoai domain nay
+    credentials: true, //Để bật cookie HTTP qua CORS
+  })
+);
 
 // Connect db
 db.connect();
@@ -25,12 +27,13 @@ const quizRouter = require("./apps/quizzes/quiz.routes");
 const questionRouter = require("./apps/questions/question.routes");
 const subjectRouter = require("./apps/subjects/subject.routes");
 const postRouter = require("./apps/posts/post.routes");
+const quizPartRouter = require("./apps/quizParts/quizPart.routes");
 const commentRouter = require("./apps/comments/comment.routes");
 const userRouter = require("./apps/users/user.routes");
-const classRouter = require("./apps/classes/class.routes")
-const teacherRouter = require("./apps/teachers/teacher.routes")
-const studentRouter = require("./apps/students/student.routes")
-const classSubjectRouter = require("./apps/class_subject/class_subject.routes")
+const classRouter = require("./apps/classes/class.routes");
+const teacherRouter = require("./apps/teachers/teacher.routes");
+const studentRouter = require("./apps/students/student.routes");
+const classSubjectRouter = require("./apps/class_subject/class_subject.routes");
 const viewRouter = require("./apps/view/view");
 
 // Set up
@@ -56,9 +59,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   next();
 // });
 
-
 app.use("/api/auth", authRouter);
 app.use("/api/quizzes", quizRouter);
+app.use("/api/quizParts", quizPartRouter);
 app.use("/api/questions", questionRouter);
 app.use("/api/subjects", subjectRouter);
 app.use("/api/posts", postRouter);
@@ -69,7 +72,6 @@ app.use("/api/teachers", teacherRouter);
 app.use("/api/students", studentRouter);
 app.use("/api/class-subject", classSubjectRouter);
 app.use("/views", viewRouter);
-
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {

@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const Quiz = new Schema({
-  quizzId: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
   timeLimit: { type: Number, required: true },
@@ -18,17 +17,7 @@ const Quiz = new Schema({
   topic: { type: [String] },
   shuffleQuestion: { type: Boolean, default: true },
   shuffleAnswer: { type: Boolean, default: true },
-  status: { type: Boolean, required: true, default: false },
-  assignedClass: [{ type: String }],
-  quizParts: {
-    type: [
-      {
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        questions: { type: [ObjectId], required: true },
-      },
-    ],
-  },
+  assignedStatus: { type: Boolean, required: true, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

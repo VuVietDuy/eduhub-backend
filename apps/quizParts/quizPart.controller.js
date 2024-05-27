@@ -1,34 +1,18 @@
-const Question = require("./question.model");
-const Option = require("../options/option.model");
+const QuizPart = require("./quizPart.model");
 
-async function createNewQuestion(req, res) {
-  const highestOrder = await Question.findOne(
-    // { quizId: req.body.quizId },
-    { orderNum: 1 },
-    { sort: { orderNum: -1 } }
-  );
-  let nextOrderNumber = 1;
-
-  if (highestOrder) {
-    nextOrderNumber = highestOrder.orderNum + 1;
-  }
-  const newQuestion = new Question({
-    orderNum: req.body.orderNum,
-    questionContent: req.body.questionContent,
-    questionType: req.body.questionType,
-    partId: req.body.partId,
+async function createNewQuizPart(req, res) {
+  const newQuizPart = new QuizPart({
+    quizId: req.body.quizId,
+    title: req.body.title,
+    desc: req.body.desc,
   });
-  const options = new Option(req.body.options);
-  await newQuestion
+  await newQuizPart
     .save()
-    .then((question) => {
-      // options.options.map((option) => {
-      //   Option.save(option);
-      // });
+    .then((quizPart) => {
       return res.status(200).json({
         success: true,
-        message: "Tạo câu hỏi thành công",
-        data: question,
+        message: "Tạo phần thi thành công",
+        data: quizPart,
       });
     })
     .catch((err) => {
@@ -40,15 +24,15 @@ async function createNewQuestion(req, res) {
     });
 }
 
-const getAllQuestionOfPart = async (req, res) => {
-  const reqId = req.params.quizPartId;
-  await Question.find()
-    .populate("quizPart")
-    .then((question) => {
+const getAllQuizPartOfQuiz = async (req, res) => {
+  // const reqId = req.params.quizPartId;
+  await QuizPart.find()
+    .populate("quizId")
+    .then((QuizPart) => {
       return res.status(200).json({
         success: true,
         message: "Câu hỏi: ",
-        data: question,
+        data: QuizPart,
       });
     })
     .catch((err) => {
@@ -59,7 +43,7 @@ const getAllQuestionOfPart = async (req, res) => {
       });
     });
 };
-async function getQuestionById(req, res) {
+async function getQuizPartById(req, res) {
   const reqId = req.params.id;
 
   if (!reqId) {
@@ -68,12 +52,12 @@ async function getQuestionById(req, res) {
       message: "Missing required parameter!",
     });
   } else {
-    await Question.findById(reqId)
-      .then((question) => {
+    await QuizPart.findById(reqId)
+      .then((quizPart) => {
         return res.status(200).json({
           success: true,
-          message: "Câu hỏi: ",
-          data: question,
+          message: "Get quizPart successfully",
+          data: quizPart,
         });
       })
       .catch((err) => {
@@ -86,7 +70,7 @@ async function getQuestionById(req, res) {
   }
 }
 
-async function deleteQuestionById(req, res) {
+async function deleteQuizPartById(req, res) {
   const reqId = req.params.id;
   if (!reqId) {
     return res.status(200).json({
@@ -94,12 +78,12 @@ async function deleteQuestionById(req, res) {
       message: "Missing required parameter!",
     });
   } else {
-    await Question.findByIdAndDelete(reqId)
-      .then((question) => {
+    await QuizPart.findByIdAndDelete(reqId)
+      .then((quizPart) => {
         return res.status(200).json({
           success: true,
           message: "Xóa câu hỏi thành công",
-          data: question,
+          data: quizPart,
         });
       })
       .catch((err) => {
@@ -112,7 +96,7 @@ async function deleteQuestionById(req, res) {
   }
 }
 
-async function updateQuestionById(req, res) {
+async function updateQuizPartById(req, res) {
   const reqId = req.body._id;
   if (!reqId) {
     return res.status(200).json({
@@ -120,22 +104,21 @@ async function updateQuestionById(req, res) {
       message: "Missing required parameter!",
     });
   } else {
-    await Question.findByIdAndUpdate(
+    await QuizPart.findByIdAndUpdate(
       reqId,
       {
-        questionContent: req.body.questionContent,
-        questionType: req.body.questionType,
-        options: req.body.answer,
+        title: req.body.title,
+        desc: req.body.desc,
       },
       {
         returnDocument: "after",
       }
     )
-      .then((question) => {
+      .then((quizPart) => {
         return res.status(200).json({
           success: true,
-          message: "Chỉnh sửa câu hỏi thành công!",
-          data: question,
+          message: "Chỉnh sửa phần thi thành công!",
+          data: quizPart,
         });
       })
       .catch((err) => {
@@ -149,9 +132,9 @@ async function updateQuestionById(req, res) {
 }
 
 module.exports = {
-  createNewQuestion,
-  updateQuestionById,
-  getQuestionById,
-  deleteQuestionById,
-  getAllQuestionOfPart,
+  createNewQuizPart,
+  updateQuizPartById,
+  getQuizPartById,
+  deleteQuizPartById,
+  getAllQuizPartOfQuiz,
 };

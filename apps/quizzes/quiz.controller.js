@@ -25,14 +25,13 @@ async function createNewQuiz(req, res) {
 
 async function getAllQuiz(req, res) {
   //Laấy quizz theo giáo viên
-
   const reqOffset = req.query.offset;
   const reqLimit = req.query.limit;
   let filterConditions = {
-    createdBy: req.query.userId,
+    createdBy: req.userId,
   };
   if (req.query.grade) {
-    filterConditions.grade = req.query.grade;
+    filterConditions.grade = req.params.grade;
   }
   await Quiz.find(filterConditions)
     .skip(reqOffset)
@@ -41,7 +40,7 @@ async function getAllQuiz(req, res) {
     .then((allQuiz) => {
       return res.status(200).json({
         success: true,
-        message: "Successful",
+        message: "Successful!",
         data: allQuiz,
       });
     })
@@ -144,6 +143,51 @@ async function deleteQuizById(req, res) {
       });
   }
 }
+const getQuizByGrade = async (req, res) => {
+  const reqOffset = req.query.offset;
+  const reqLimit = req.query.limit;
+  let filterConditions = {
+    createdBy: req.userId,
+  };
+  if (req.params.grade) {
+    filterConditions.grade = req.params.grade;
+  }
+  await Quiz.find(filterConditions)
+    .skip(reqOffset)
+    .limit(reqLimit)
+    .sort({ createdAt: "desc", updatedAt: "desc" })
+    .then((allQuiz) => {
+      return res.status(200).json({
+        success: true,
+        message: "Successful!",
+        data: allQuiz,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Server error. Please try again.",
+        error: err.message,
+      });
+    });
+
+  // const grade = req.params.grade;
+  // await Quiz.find({ grade: grade })
+  //   .then((quiz) => {
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: "Lấy bài thi thành công",
+  //       data: quiz,
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json({
+  //       success: false,
+  //       message: "Server error. Please try again.",
+  //       error: err.message,
+  //     });
+  //   });
+};
 
 async function updateQuiz(req, res) {
   const quizzId = req.body._id;
@@ -158,11 +202,14 @@ async function updateQuiz(req, res) {
       {
         title: req.body.title,
         description: req.body.description,
-        timeLimit: req.body.timeLimit,
-        deadline: req.body.deadline,
         imgURL: req.body.imgURL,
-        level: req.body.level,
-        active: req.body.active,
+        grade: req.body.grade,
+        assignedStatus: req.body.assignedStatus,
+        topic: req.body.topic,
+        shuffleAnswer: req.body.shuffleAnswer,
+        shuffleQuestion: req.body.shuffleQuestion,
+        timeLimit: req.body.timeLimit,
+        quizParts: req.body.quizParts,
         subjectId: req.body.subjectId,
       },
       {
@@ -206,4 +253,5 @@ module.exports = {
   updateQuiz,
   getAllQuestionFromQuiz,
   submitQuiz,
+  getQuizByGrade,
 };
