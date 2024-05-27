@@ -107,7 +107,21 @@ function getAllStudents(req, res) {
 }
 
 function deleteStudent(req, res) {
-
+    const id = req.params.id;
+    Student.findByIdAndDelete(id)
+        .then((result) => {
+            return res.status(200).json({
+                success: true,
+                message: 'Thành công',
+                data: result
+            })
+        }).catch(err => {
+            return res.status(500).json({
+                success: false,
+                message: err.message,
+                data: null,
+            })
+        })
 }
 
 module.exports = {

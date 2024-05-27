@@ -19,7 +19,6 @@ const Quiz = new Schema({
   shuffleQuestion: { type: Boolean, default: true },
   shuffleAnswer: { type: Boolean, default: true },
   status: { type: Boolean, required: true, default: false },
-  assignedClass: [{ type: String }],
   quizParts: {
     type: [
       {
